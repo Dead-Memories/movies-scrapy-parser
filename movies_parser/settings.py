@@ -26,7 +26,7 @@ USER_AGENT = (
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-
+FEED_EXPORT_FIELDS = ["country", "director", "genre", "imdb_rating", "title", "year"]
 # Concurrency and throttling settings
 #CONCURRENT_REQUESTS = 16
 CONCURRENT_REQUESTS_PER_DOMAIN = 2

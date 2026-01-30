@@ -92,6 +92,9 @@ class WikiMoviesSpider(scrapy.Spider):
             if href.startswith("/wiki/Категория:"):
                 continue
 
+            # фильтр на редирект
+            if "#" in href:
+                continue
             yield response.follow(href, callback=self.parse_movie)
 
         # 3) Следующая страница категории
@@ -105,7 +108,16 @@ class WikiMoviesSpider(scrapy.Spider):
             return
 
         item = MovieItem()
-        item["title"] = self._clean(response.css("#firstHeading::text").get())
+        # item["title"] = self._clean(response.css("#firstHeading::text").get())
+        title = response.css("#firstHeading::text").get()
+        if not title:
+            title = response.xpath('//h1[@id="firstHeading"]/span/text()').get()
+        if not title:
+            title = response.css("title::text").get() 
+            if title:
+                title = title.split("—")[0].strip()
+
+        item["title"] = self._clean(title)
 
         item["genre"] = self._infobox_value(response, ["Жанр", "Жанры"])
         item["director"] = self._infobox_value(response, ["Режиссёр", "Режиссер", "Режиссёр-постановщик"])
